@@ -38,7 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'api.apps.ApiConfig',
-    'rest_framework'
+    # other installed packages
+    'rest_framework',
+    'django_filters',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -55,6 +58,7 @@ MIDDLEWARE = [
 REST_FRAMEWORK = {
     'DATETIME_FORMAT': '%b-%d-%Y %H:%M:%S',
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
     'PAGE_SIZE': 10,
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -62,6 +66,16 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
 }
 
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': True,
+    'SECURITY_DEFINITIONS': {
+        'api_Key': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'Token Authorization'
+        }
+    },
+}
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
@@ -165,27 +179,3 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-LOGGING = {
-    'version': 1,
-    # The version number of our log
-    'disable_existing_loggers': False,
-    # django uses some of its own loggers for internal operations. In case you want to disable them just replace the False above with true.
-    # A handler for WARNING. It is basically writing the WARNING messages into a file called WARNING.log
-    'handlers': {
-        'file': {
-            'level': 'WARNING',
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'warning.log',
-        },
-    },
-    # A logger for WARNING which has a handler called 'file'. A logger can have multiple handler
-    'loggers': {
-       # notice the blank '', Usually you would put built in loggers like django or root here based on your needs
-        '': {
-            'handlers': ['file'], #notice how file variable is called in handler which has been defined above
-            'level': 'WARNING',
-            'propagate': True,
-        },
-    },
-}

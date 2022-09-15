@@ -88,6 +88,7 @@ class Team(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     team_lead = models.CharField(max_length=30)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.team_lead

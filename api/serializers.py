@@ -37,4 +37,17 @@ class UserSerializerWithToken(UserSerializer):
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
-        fields = ('company_name', 'company_ceo', 'company_address', 'inception_data')
+        # In most of the senario we dont send ID for frontend this may cause some serious security breachs insted of this we can use slug
+        fields = ('id', 'company_name', 'company_ceo', 'company_address', 'inception_data')
+
+
+class TeamSerializerAll(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Team
+        fields = ('team_lead', 'created_at')
+
+
+class TeamSerializer(TeamSerializerAll):
+    class Meta:
+        model = Team
+        fields = ('company', 'team_lead', 'created_at')

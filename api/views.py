@@ -1,16 +1,17 @@
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
 from rest_framework import status
 from rest_framework_simplejwt.views import TokenObtainPairView
 from . import serializers
 from . import models
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import IsAuthenticated,IsAdminUser
-import logging
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 
-# Get an instance of a logger
-logger = logging.getLogger(__name__)
+
+
 
 @api_view(['GET'])
 def homePage(request):
@@ -25,17 +26,42 @@ class CompanyViewSet(ModelViewSet):
     queryset = models.Company.objects.all().order_by('-inception_data')
     serializer_class = serializers.CompanySerializer
     pagination_class = PageNumberPagination
-    permission_classes = [IsAuthenticated,IsAdminUser]
+    # permission_classes = [IsAuthenticated,IsAdminUser]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['=company_name']
+    ordering_fields = ['inception_data']
+
+
+class TeamViewSet(ModelViewSet):
+    queryset = models.Team.objects.all().order_by('-created_at')
+    serializer_class = serializers.TeamSerializer
+    pagination_class = PageNumberPagination
+    # permission_classes = [IsAuthenticated, IsAdminUser]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['company']
+
+    @action(detail=False, methods=['GET'])
+    def allteams(self, request):
+        d = {}
+        company = models.Company.objects.all()
+        for i in company:
+            team = models.Team.objects.filter(company__id=i.id)
+            serialized_data = serializers.TeamSerializerAll(team, many=True).data
+            company_id = str(i.id)
+            if company_id not in d:
+                d[company_id] = [serialized_data]
+            else:
+                d[company_id].append(serialized_data)
+        return Response(d)
 
 
 @api_view(['POST'])
 def register(request):
-    request_map = ['name', 'email', 'phone', 'is_superadmin','password']
+    request_map = ['name', 'email', 'phone', 'is_superadmin', 'password']
     data = request.data
 
     for i in request_map:
         if i not in data:
-            logger.info(f"key {i} is missing from the request map")
             return Response(f"{i} is required", status=status.HTTP_400_BAD_REQUEST)
 
     email = data['email']
@@ -50,12 +76,11 @@ def register(request):
         return Response("Phone number already exists", status=status.HTTP_400_BAD_REQUEST)
 
     if is_super_admin:
-        acc = models.Account.objects.create_superuser(name,email,email,password)
+        acc = models.Account.objects.create_superuser(name, email, email, password)
     else:
-        acc = models.Account.objects.create_user(name,email,email,password)
+        acc = models.Account.objects.create_user(name, email, email, password)
 
     acc.phone_number = phone_number
     acc.save()
     serializer = serializers.UserSerializerWithToken(acc)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
-
