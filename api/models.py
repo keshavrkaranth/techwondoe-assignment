@@ -72,7 +72,7 @@ class Company(models.Model):
     company_name = models.CharField(max_length=100)
     company_ceo = models.CharField(max_length=30)
     company_address = models.TextField()
-    inception_data = models.DateTimeField()
+    inception_date = models.DateTimeField()
 
     created_at = models.DateTimeField(auto_now_add=True)
 

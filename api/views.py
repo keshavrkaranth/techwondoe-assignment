@@ -23,10 +23,10 @@ class MyTokenObtainPairView(TokenObtainPairView):
 
 
 class CompanyViewSet(ModelViewSet):
-    queryset = models.Company.objects.all().order_by('-inception_data')
+    queryset = models.Company.objects.all().order_by('-inception_date')
     serializer_class = serializers.CompanySerializer
     pagination_class = PageNumberPagination
-    # permission_classes = [IsAuthenticated,IsAdminUser]
+    permission_classes = [IsAuthenticated,IsAdminUser]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['=company_name']
     ordering_fields = ['inception_data']
@@ -36,7 +36,7 @@ class TeamViewSet(ModelViewSet):
     queryset = models.Team.objects.all().order_by('-created_at')
     serializer_class = serializers.TeamSerializer
     pagination_class = PageNumberPagination
-    # permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [IsAuthenticated, IsAdminUser]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['company']
 
