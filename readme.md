@@ -1,11 +1,11 @@
 [TECHWONDOE ASSIGNMENT]
 * Create a Django Rest Framework Application to expose a few API's and also design and implement supporting database tables.
 
-To run project
-Make sure docker is installed in your pc
-run command docker-compose build
-then run docker-compose up 
-hurray your local server is running in `http://127.0.0.1:8000/api/`
+# To run project:
+* Make sure docker is installed in your pc
+* run command docker-compose build
+* then run docker-compose up 
+* hurray your local server is running in `http://127.0.0.1:8000/api/`
 
 The main routes are
 * /api/login
@@ -23,7 +23,7 @@ sample Payload for registering user
     "email":"email@gmail.com",
     "phone":"1234567890",
     "password":"1234",
-    "is_superadmin":false
+    "is_superadmin":true
 }
 
 you'll receive a jwt token to access further routes 
